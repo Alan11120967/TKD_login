@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TK.d</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    height: 100vh;
+    background: #f5f7fa;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a1a2e;
+  }
+    #particleCanvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: 5;
+    pointer-events: none;
+  }
+  .meteor {
+    position: fixed;
+    top: -5%; left: -5%;
+    width: 200px; height: 1px;
+    background: linear-gradient(to right, rgba(0,0,0,0), #00b4d8);
+    transform: rotate(38deg);
+    transform-origin: left center;
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+    animation: meteorFly 1s 0.6s cubic-bezier(.2,.8,.3,1) forwards;
+  }
+  .meteor::after {
+    content: '';
+    position: absolute; right: 0; top: -3px;
+    width: 6px; height: 6px;
+    background: #00b4d8;
+    border-radius: 50%;
+    box-shadow: 0 0 14px 4px #00b4d8;
+  }
+  @keyframes meteorFly {
+    0%   { opacity: 0; transform: rotate(38deg) translateX(0); }
+    8%   { opacity: 1; }
+    100% { opacity: 0; transform: rotate(38deg) translateX(150vw) translateY(120vh); }
+  }
+  .brand-section {
+    position: absolute;
+    z-index: 3;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: slideToLeft 1.5s 0.3s ease-out forwards;
+  }
+  @keyframes slideToLeft {
+    0% { left: 50%; transform: translate(-50%, -50%); }
+    100% { left: 35%; transform: translate(0%, -50%); }
+  }
+  .brand-text {
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: 12px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #00b4d8 60%, #0077b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .brand-sub {
+    margin-top: 8px;
+    font-size: 0.65rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(0,180,216,0.4);
+  }
+  .login-section {
+    position: fixed;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 310px;
+    z-index: 4;
+    opacity: 0;
+    animation: panelIn 0.7s 1.8s ease-out forwards;
+  }
+  @keyframes panelIn {
+    0%   { opacity: 0; transform: translateY(-50%) translateX(30px); }
+    100% { opacity: 1; transform: translateY(-50%) translateX(0); }
+  }
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(0,180,216,0.12);
+    border-radius: 18px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+  .dodecahedron-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    perspective: 280px;
+  }
+  .dodecahedron {
+    width: 56px; height: 56px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: dodecSpin 12s linear infinite;
+  }
+  @keyframes dodecSpin {
+    0%   { transform: rotateX(0) rotateY(0); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+  }
+  .d-face {
+    position: absolute;
+    width: 56px; height: 56px;
+    border: 1px solid rgba(0, 119, 182, 0.45);
+    background: rgba(0, 119, 182, 0.25);
+    clip-path: polygon(50% 0%, 97.5% 35%, 79.4% 90%, 20.6% 90%, 2.5% 35%);
+  }
+  .d-face:nth-child(1)  { transform: rotateY(0deg)   translateZ(36px); }
+  .d-face:nth-child(2)  { transform: rotateY(72deg)  translateZ(36px); }
+  .d-face:nth-child(3)  { transform: rotateY(144deg) translateZ(36px); }
+  .d-face:nth-child(4)  { transform: rotateY(216deg) translateZ(36px); }
+  .d-face:nth-child(5)  { transform: rotateY(288deg) translateZ(36px); }
+  .d-face:nth-child(6)  { transform: rotateX(63.4deg) rotateY(36deg)  translateZ(36px); }
+  .d-face:nth-child(7)  { transform: rotateX(63.4deg) rotateY(108deg) translateZ(36px); }
+  .d-face:nth-child(8)  { transform: rotateX(63.4deg) rotateY(180deg) translateZ(36px); }
+  .d-face:nth-child(9)  { transform: rotateX(63.4deg) rotateY(252deg) translateZ(36px); }
+  .d-face:nth-child(10) { transform: rotateX(63.4deg) rotateY(324deg) translateZ(36px); }
+  .d-face:nth-child(11) { transform: rotateX(-63.4deg) rotateY(0deg)   translateZ(36px); }
+  .d-face:nth-child(12) { transform: rotateX(-63.4deg) rotateY(180deg) translateZ(36px); }
+  .input-field { margin-bottom: 16px; }
+  .input-field input {
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0,180,216,0.18);
+    color: #1a1a2e;
+    font-size: 0.88rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  .input-field input::placeholder {
+    color: rgba(0,0,0,0.25);
+    font-size: 0.8rem;
+  }
+  .input-field input:focus {
+    border-bottom-color: #00b4d8;
+    box-shadow: 0 1px 0 0 #00b4d8;
+  }
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    background: transparent;
+    border: 1px solid #00b4d8;
+    border-radius: 10px;
+    color: #00b4d8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .submit-btn:hover {
+    background: rgba(0,180,216,0.06);
+    box-shadow: 0 0 18px rgba(0,180,216,0.12);
+  }
+  #msgBox {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 0.78rem;
+    min-height: 18px;
+    color: #e63946;
+  }
+  #msgBox.ok { color: #2a9d8f; }
+</style>
+</head>
+<body>
+<canvas id="particleCanvas"></canvas>
+<div class="meteor"></div>
+<div class="brand-section">
+  <div>
+    <div class="brand-text">TK.d</div>
+    <div class="brand-sub">Quantum Terminal</div>
+  </div>
+</div>
+<div class="login-section">
+  <div class="glass-panel">
+    <div class="dodecahedron-wrap">
+      <div class="dodecahedron">
+        <div class="d-face"></div><div class="d-face"></div>
+        <div class="d-face"></div><div class="d-face"></div>
+        <div class="d-face"></div><div class="d-face"></div>
+        <div class="d-face"></div><div class="d-face"></div>
+        <div class="d-face"></div><div class="d-face"></div>
+        <div class="d-face"></div><div class="d-face"></div>
+      </div>
+    </div>
+    <form id="loginForm" action="javascript:void(0)">
+      <div class="input-field"><input type="text" id="uname" placeholder="Username" required></div>
+      <div class="input-field"><input type="password" id="upass" placeholder="Password" required></div>
+      <button type="submit" class="submit-btn">Enter</button>
+    </form>
+    <div id="msgBox"></div>
+  </div>
+</div>
+<script>
+const ACCOUNT_FILE = 'user_account.txt';
+let accounts = [];
+
+async function loadAccounts() {
+  try {
+    const res = await fetch(ACCOUNT_FILE + '?t=' + Date.now());
+    const text = await res.text();
+    accounts = text.trim().split('\n').filter(l => l.trim()).map(line => {
+      const [username, password, role] = line.trim().split('-');
+      return { username, password, role };
+    });
+  } catch(e) {
+    console.warn('User list expired');
+  }
+}
+loadAccounts();
+
+function validatePassword(pwd) {
+  if (pwd.length !== 8) return false;
+  const letters = pwd.slice(0, 4);
+  const digits = pwd.slice(4, 8);
+  if (!/^[a-zA-Z]{4}$/.test(letters)) return false;
+  if (!/^\d{4}$/.test(digits)) return false;
+  return true;
+}
+
+function getRoleLabel(role) {
+  if (role === 'administrator') return 'administrator';
+  if (role === 'user') return 'user';
+  return 'stranger';
+}
+
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const name = document.getElementById('uname').value.trim();
+  const pass = document.getElementById('upass').value.trim();
+  const msg = document.getElementById('msgBox');
+
+  if (!validatePassword(pass)) {
+    msg.className = '';
+    msg.textContent = 'Invalid password format';
+    document.getElementById('uname').value = '';
+    document.getElementById('upass').value = '';
+    return;
+  }
+
+  await loadAccounts();
+
+  const found = accounts.find(a => a.username === name && a.password === pass);
+  if (found) {
+    msg.className = 'ok';
+    msg.textContent = 'Welcome, ' + name + ' [' + getRoleLabel(found.role) + ']';
+    setTimeout(() => {
+      alert('Access Granted — ' + name + ' (' + getRoleLabel(found.role) + ')');
+    }, 300);
+  } else {
+    msg.className = '';
+    msg.textContent = 'Invalid identity, access denied';
+    document.getElementById('uname').value = '';
+    document.getElementById('upass').value = '';
+  }
+});
+
+const bgCanvas = document.getElementById('particleCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+let particles = [], mouse = { x: null, y: null };
+function resizeBg() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+resizeBg();
+window.addEventListener('resize', resizeBg);
+window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+class Particle {
+  constructor() {
+    this.x = Math.random() * bgCanvas.width;
+    this.y = Math.random() * bgCanvas.height;
+    this.size = Math.random() * 1.5 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.3;
+    this.speedY = (Math.random() - 0.5) * 0.3;
+    this.opacity = Math.random() * 0.5 + 0.1;
+  }
+  update() {
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x < 0 || this.x > bgCanvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > bgCanvas.height) this.speedY *= -1;
+    if (mouse.x !== null) {
+      const dx = mouse.x - this.x, dy = mouse.y - this.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 150) { this.x += dx * 0.01; this.y += dy * 0.01; this.opacity = Math.min(this.opacity + 0.02, 0.8); }
+    }
+  }
+  draw() {
+    bgCtx.fillStyle = `rgba(0, 180, 216, ${this.opacity})`;
+    bgCtx.beginPath(); bgCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2); bgCtx.fill();
+  }
+}
+function initParticles() {
+  particles = [];
+  const count = Math.min(120, Math.floor((bgCanvas.width * bgCanvas.height) / 12000));
+  for (let i = 0; i < count; i++) particles.push(new Particle());
+}
+initParticles();
+function connectParticles() {
+  for (let a = 0; a < particles.length; a++) {
+    for (let b = a + 1; b < particles.length; b++) {
+      const dx = particles[a].x - particles[b].x, dy = particles[a].y - particles[b].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        bgCtx.strokeStyle = `rgba(0, 180, 216, ${(1 - dist / 120) * 0.15})`;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.beginPath(); bgCtx.moveTo(particles[a].x, particles[a].y);
+        bgCtx.lineTo(particles[b].x, particles[b].y); bgCtx.stroke();
+      }
+    }
+  }
+}
+function animateBg() {
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+  particles.forEach(p => { p.update(); p.draw(); });
+  connectParticles();
+  requestAnimationFrame(animateBg);
+}
+animateBg();
+</script>
+</body>
+</html>
